@@ -64,3 +64,12 @@ This architecture includes:
 2. **Tools**: Terraform for infra provisioning; test coverage tracking for quality assurance.
 3. **Relation to lecture**: Covers Unit 3 – continuous integration and infrastructure-as-code.
 
+#### Target Customers
+
+Our system is designed for organizations that require long-term, continuous traffic flow monitoring. Primary target customers include:
+
+- **Government transportation departments**  
+  Seeking accurate, real-time traffic data to optimize traffic signal control and support data-driven urban planning initiatives.
+
+- **Intelligent Transportation System (ITS) providers**  
+  Developing and maintaining traffic management platforms for urban areas, highways, and smart city infrastructure, and requiring robust backend systems to power their solutions.
