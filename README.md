@@ -6,7 +6,6 @@ Our project aims to enhance real-time traffic monitoring by replacing manual or 
 
 | Name                     | Responsible for                           | Link to the commits in the repo |
 |--------------------------|-------------------------------------------|------------------------------------|
-| All team members         | General project implementation            |                                    |
 | Kirit Govindaraja Pillai | Model training and hyperparameter tuning  | [Commits](https://github.com/kiritgpillai/Realtime-Traffic-Object-Detection-and-Tracking/commits?author=kiritgpillai) |
 | Sancho Wong              | Data pipeline and real-time data handling | [Commits](https://github.com/kiritgpillai/Realtime-Traffic-Object-Detection-and-Tracking/commits?author=sanchoo1) |
 | Ruochong Wang            | Deployment and monitoring infrastructure  | [Commits](https://github.com/kiritgpillai/Realtime-Traffic-Object-Detection-and-Tracking/commits?author=bBlakesy) |
