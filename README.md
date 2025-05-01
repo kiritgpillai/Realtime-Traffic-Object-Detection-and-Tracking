@@ -12,43 +12,44 @@ Our project aims to enhance real-time traffic monitoring by replacing manual or 
 
 ### System diagram
 
-![System Diagram](https://github.com/user-attachments/assets/e6a1f5f1-f596-4fdd-8011-0616f7598a27)
+![System Diagram](https://github.com/user-attachments/assets/104d4114-3711-4baf-8b1d-6e3af947fc48)
+
 
 This architecture includes:
-- ETL pipeline for ingesting data from BDD100K, live feeds, and simulated streams.
+- ETL pipeline for ingesting data from Polish 12k, live feeds, and simulated streams.
 - Model training with YOLOv8 and DeepSORT, orchestrated with GitHub Actions and Terraform.
 - CI/CD pipeline to support seamless deployment to model serving platforms with APIs and MLflow tracking.
-- Testing phases (Locust, Evidently) before production with monitoring tools like Label Studio and dashboards.
+- Testing phases before production with monitoring tools like Label Studio and dashboards.
 
 ### Summary of outside materials
 
-| Name         | How it was created                                                                              | Conditions of use                                   |
-|--------------|-----------------------------------------------------------------------------------------------|-----------------------------------------------------|
-| BDD100K      | Collected by UC Berkeley with self-driving vehicles in diverse weather, light, and location   | Public license for academic and non-commercial use  |
-| YOLOv8       | Trained on COCO dataset; open-source by Ultralytics                                           | Open-source (GPLv3)                                 |
-| DeepSORT     | Extension of SORT using Kalman Filters + ReID network                                         | Open-source                                         |
+| Name                  | How it was created                                                                 | Conditions of use                                   |
+|-----------------------|------------------------------------------------------------------------------------|-----------------------------------------------------|
+| Polish 12k            | Collected and annotated by Mikołaj Kołek from traffic camera footage in Poland    | Public domain; free to use for research/commercial  |
+| YOLOv8                | Trained on COCO dataset; open-source by Ultralytics                               | Open-source (GPLv3)                                 |
+| DeepSORT              | Extension of SORT using Kalman Filters + ReID network                             | Open-source                                         |
 
 ### Summary of infrastructure requirements
 
 | Requirement     | How many/when                     | Justification                                        |
 |-----------------|-----------------------------------|-----------------------------------------------------|
-| `m1.medium` VMs | 2 for data processing + API       | Persistent processing and hosting needs             |
+| `m1.large` VMs  | 2 for data processing + API       | Persistent processing and hosting needs             |
 | `gpu_mi100`     | 2x weekly 4hr blocks              | Required for training YOLOv8 on custom datasets     |
 | Floating IPs    | 1 static for backend              | Access from external apps and frontend              |
-| Storage         | 100GB                             | Store processed frames, models, and logs            |
+| Storage         | 80GB                              | Store processed frames, models, and logs            |
 
 ### Detailed design plan
 
 #### Model training and training platforms
 
-1. **Strategy**: Fine-tune YOLOv8 on a curated subset of BDD100K. Use DeepSORT for object tracking post-detection. GitHub Actions used to automate training pipeline.
+1. **Strategy**: Fine-tune YOLOv8 on the Polish 12k dataset. Use DeepSORT for object tracking post-detection. GitHub Actions used to automate training pipeline.
 2. **Justification**: Real-time capability and performance balance; both models are widely tested in research and industry.
 3. **Relation to lecture**: Covers Units 4 and 5 – model tuning, training reproducibility.
 4. **Difficulty**: Advanced dataset preprocessing, GPU training, and tracking integration.
 
 #### Model serving and monitoring platforms
 
-1. **Strategy**: Serve models via an API with Redis + FastAPI. MLflow used for model versioning. Locust simulates load; Evidently monitors drift.
+1. **Strategy**: Serve models via an API with Redis + FastAPI. MLflow used for model versioning.
 2. **Relation to lecture**: Covers Units 6 and 7 – real-time serving, monitoring, testing.
 3. **Difficulty**: Canary testing and dashboard integration for observability.
 
