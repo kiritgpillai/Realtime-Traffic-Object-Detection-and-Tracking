@@ -1,0 +1,6 @@
+- name: Setup MLOps services
+  hosts: all
+  become: true
+  roles:
+    - docker
+    - k3s
