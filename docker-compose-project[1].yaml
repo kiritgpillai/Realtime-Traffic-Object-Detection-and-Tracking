@@ -1,0 +1,103 @@
+version: '3.8'
+name: coco-etl
+
+volumes:
+  coco:
+
+services:
+  extract-data:
+    container_name: etl_extract_data
+    image: python:3.11
+    user: root
+    volumes:
+      - coco:/data
+    working_dir: /data
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        echo "Resetting dataset directories..."
+        rm -rf dataset annotations
+        mkdir -p dataset annotations
+
+        echo "Downloading train2017.zip..."
+        curl -L http://images.cocodataset.org/zips/train2017.zip -o train2017.zip
+
+        echo "Downloading val2017.zip..."
+        curl -L http://images.cocodataset.org/zips/val2017.zip -o val2017.zip
+
+        echo "Downloading test2017.zip..."
+        curl -L http://images.cocodataset.org/zips/test2017.zip -o test2017.zip
+
+        echo "Downloading annotations_trainval2017.zip..."
+        curl -L http://images.cocodataset.org/annotations/annotations_trainval2017.zip \
+          -o annotations.zip
+
+        echo "Download stage complete."
+  
+  transform-data:
+    container_name: etl_transform_data
+    image: python:3.11
+    volumes:
+      - coco:/data
+    working_dir: /data
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+
+        echo "Unzipping train2017.zip → /data/dataset/train2017/"
+        unzip -q train2017.zip -d dataset
+        rm -f train2017.zip
+
+        echo "Unzipping val2017.zip → /data/dataset/val2017/"
+        unzip -q val2017.zip -d dataset
+        rm -f val2017.zip
+
+        echo "Unzipping test2017.zip → /data/dataset/test2017/"
+        unzip -q test2017.zip -d dataset
+        rm -f test2017.zip
+
+        echo "Unzipping annotations.zip → /data/annotations/"
+        unzip -q annotations.zip -d annotations
+        rm -f annotations.zip
+
+        echo "Flattening annotation folder structure..."
+        if [ -d annotations/annotations ]; then
+          mv annotations/annotations/* annotations/
+          rm -rf annotations/annotations
+        fi
+
+        echo "Transform stage complete. Listing /data:"
+        ls -R /data
+
+  load-data:
+    container_name: etl_load_data
+    image: rclone/rclone:latest
+    volumes:
+      - coco:/data
+      - ~/.config/rclone/rclone.conf:/root/.config/rclone/rclone.conf:ro
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        if [ -z "$RCLONE_CONTAINER" ]; then
+          echo "ERROR: RCLONE_CONTAINER is not set"
+          exit 1
+        fi
+
+        echo "Cleaning up existing remote contents..."
+        rclone delete chi_tacc:$RCLONE_CONTAINER --rmdirs || true
+
+        echo "Uploading dataset/ → remote:$RCLONE_CONTAINER/dataset"
+        rclone copy /data/dataset chi_tacc:$RCLONE_CONTAINER/dataset \
+          --progress --transfers=32 --checkers=16 --fast-list
+
+        echo "Uploading annotations/ → remote:$RCLONE_CONTAINER/annotations"
+        rclone copy /data/annotations chi_tacc:$RCLONE_CONTAINER/annotations \
+          --progress --transfers=8 --checkers=8 --fast-list
+
+        echo "Load stage complete. Remote contents:"
+        rclone lsd chi_tacc:$RCLONE_CONTAINER
