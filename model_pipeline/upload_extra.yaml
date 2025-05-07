@@ -21,11 +21,11 @@ services:
         mkdir -p dataset annotations
 
         echo "Downloading archive..."
-        curl -L 'https://nyu.box.com/shared/static/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux.zip' -o /data/label.zip
+        curl -L 'https://nyu.box.com/shared/static/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux.zip' -o /data/labels.zip
 
         echo "Unzipping dataset..."
-        unzip -q label.zip
-        rm -f label.zip
+        unzip -q labels.zip
+        rm -f labels.zip
 
         echo "Listing contents of /data after extract stage:"
         ls -l /data
