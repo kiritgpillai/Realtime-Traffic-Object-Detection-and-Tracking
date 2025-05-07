@@ -4,7 +4,33 @@ volumes:
   coco:
 
 services:
-  upload-extra-data:
+  extract-extra-data:
+    container_name: etl_upload_extra_data
+    image: python:3.11
+    user: root
+    volumes:
+      - coco:/data
+    working_dir: /data
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        echo "Resetting dataset directories..."
+        rm -rf dataset annotations
+        mkdir -p dataset annotations
+
+        echo "Downloading archive..."
+        curl -L 'https://nyu.box.com/shared/static/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux.zip' -o /data/extra.zip
+
+        echo "Unzipping dataset..."
+        unzip -q Food-11.zip
+        rm -f Food-11.zip
+
+        echo "Listing contents of /data after extract stage:"
+        ls -l /data
+
+  load-extra-data:
     container_name: etl_upload_extra_data
     image: rclone/rclone:latest
     user: root
@@ -16,13 +42,6 @@ services:
       - -c
       - |
         set -e
-
-        echo "Downloading archive..."
-        curl -L 'https://nyu.box.com/shared/static/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux.zip?dl=1' -o /data/extra.zip
-
-        echo "Unzipping to /data/extra_data/..."
-        unzip -q /data/extra.zip -d /data/extra_data
-        rm -f /data/extra.zip
 
         echo "Uploading extra_data/ → chi_tacc:$RCLONE_CONTAINER/"
         rclone copy /data/extra_data chi_tacc:$RCLONE_CONTAINER \
