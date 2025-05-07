@@ -24,8 +24,8 @@ services:
         curl -L 'https://nyu.box.com/shared/static/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux.zip' -o /data/extra.zip
 
         echo "Unzipping dataset..."
-        unzip -q Food-11.zip
-        rm -f Food-11.zip
+        unzip -q extra.zip
+        rm -f extra.zip
 
         echo "Listing contents of /data after extract stage:"
         ls -l /data
