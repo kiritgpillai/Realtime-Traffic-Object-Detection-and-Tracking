@@ -1,0 +1,32 @@
+version: '3.8'
+
+volumes:
+  coco:
+
+services:
+  upload-extra-data:
+    container_name: etl_upload_extra_data
+    image: rclone/rclone:latest
+    user: root
+    volumes:
+      - coco:/data
+      - ~/.config/rclone/rclone.conf:/root/.config/rclone/rclone.conf:ro
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        set -e
+
+        echo "Downloading archive..."
+        curl -L 'YOUR_DOWNLOAD_URL_HERE' -o /data/extra.zip
+
+        echo "Unzipping to /data/extra_data/..."
+        unzip -q /data/extra.zip -d /data/extra_data
+        rm -f /data/extra.zip
+
+        echo "Uploading extra_data/ → chi_tacc:$RCLONE_CONTAINER/"
+        rclone copy /data/extra_data chi_tacc:$RCLONE_CONTAINER \
+          --progress --transfers=16 --checkers=8 --fast-list
+
+        echo "Upload complete. Listing remote:"
+        rclone lsf chi_tacc:$RCLONE_CONTAINER
