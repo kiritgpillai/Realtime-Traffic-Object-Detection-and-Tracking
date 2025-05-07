@@ -21,7 +21,8 @@ services:
         mkdir -p dataset annotations
 
         echo "Downloading archive..."
-        curl -L 'https://nyu.box.com/shared/static/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux.zip?dl=1' -o /data/labels.zip
+        curl -L 'https://nyu.box.com/shared/static/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux.zip' -o /data/labels.zip
+        ls -l /data
 
         echo "Unzipping dataset..."
         unzip -q labels.zip
