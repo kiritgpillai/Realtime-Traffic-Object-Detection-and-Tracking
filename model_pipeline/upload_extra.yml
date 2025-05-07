@@ -18,7 +18,7 @@ services:
         set -e
 
         echo "Downloading archive..."
-        curl -L 'YOUR_DOWNLOAD_URL_HERE' -o /data/extra.zip
+        curl -L 'https://nyu.box.com/s/6hhmkdk9eviqaht1rnxn9qt00ccjq1ux' -o /data/extra.zip
 
         echo "Unzipping to /data/extra_data/..."
         unzip -q /data/extra.zip -d /data/extra_data
