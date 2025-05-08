@@ -13,7 +13,7 @@ spec:
       values: |
         auth:
           rootUser: admin
-          rootPassword: admin
+          rootPassword: changeme
         mode: standalone
         persistence:
           enabled: true
@@ -25,6 +25,8 @@ spec:
             console: 30001
         nodeSelector:
           kubernetes.io/hostname: k8s-worker-0
+        podSecurityContext:
+          fsGroup: 1001
   destination:
     server: https://kubernetes.default.svc
     namespace: default
