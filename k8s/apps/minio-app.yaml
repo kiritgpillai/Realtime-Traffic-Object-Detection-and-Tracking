@@ -24,19 +24,19 @@ spec:
             api: 30000
             console: 30001
         nodeSelector:
-          kubernetes.io/hostname: k8s-worker-0
+          kubernetes.io/hostname: k8s-master-0
         podSecurityContext:
           fsGroup: 1001
         livenessProbe:
           httpGet:
             path: /minio/health/live
-            port: minio-api
+            port: 9000
           initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /minio/health/ready
-            port: minio-api
+            port: 9000
           initialDelaySeconds: 60
           periodSeconds: 10
   destination:
