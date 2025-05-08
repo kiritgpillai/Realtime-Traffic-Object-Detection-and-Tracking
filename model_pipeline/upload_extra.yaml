@@ -48,7 +48,7 @@ services:
         rclone purge chi_tacc:$RCLONE_CONTAINER/train2017
         echo "Uploading /data/labels → remote:$RCLONE_CONTAINER/labels"
         rclone copy /data/labels chi_tacc:$RCLONE_CONTAINER/labels
-          --progress --transfers=8 --checkers=8 --fast-list
+          --progress --stats=5s -v --transfers=32 --checkers=16 --multi-thread-streams=4 --fast-list
 
         echo "Upload complete. Listing remote:"
         rclone lsf chi_tacc:$RCLONE_CONTAINER
