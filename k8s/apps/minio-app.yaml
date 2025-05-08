@@ -31,13 +31,13 @@ spec:
           httpGet:
             path: /minio/health/live
             port: minio-api
-          initialDelaySeconds: 120
+          initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /minio/health/ready
             port: minio-api
-          initialDelaySeconds: 120
+          initialDelaySeconds: 60
           periodSeconds: 10
   destination:
     server: https://kubernetes.default.svc
