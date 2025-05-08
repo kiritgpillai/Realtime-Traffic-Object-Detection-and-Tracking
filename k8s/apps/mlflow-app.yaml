@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlflow
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/community-charts/helm-charts
+    chart: mlflow
+    targetRevision: 0.6.4
+    helm:
+      values: |
+        backendStore:
+          databaseMigration: true
+          database:
+            dialect: sqlite
+            url: sqlite:///mlflow.db
+        artifactRoot:
+          s3:
+            bucket: mlflow-artifacts
+            endpointUrl: http://minio.default.svc.cluster.local:9000
+            accessKey: admin
+            secretKey: admin
+        service:
+          type: NodePort
+          nodePort: 30002
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
