@@ -99,14 +99,11 @@
     enabled: no
 
 - name: Set up kubeconfig for cc user
-  become: yes
-  become_user: cc
+  become: true
   shell: |
     mkdir -p /home/cc/.kube
-    cp -i /etc/kubernetes/admin.conf /home/cc/.kube/config
-    chown $(id -u):$(id -g) /home/cc/.kube/config
-  args:
-    creates: /home/cc/.kube/config
+    cp /etc/kubernetes/admin.conf /home/cc/.kube/config
+    chown cc:cc /home/cc/.kube/config
 
 - name: Install Flannel CNI
   shell: |
