@@ -23,6 +23,8 @@ spec:
           nodePorts:
             api: 30000
             console: 30001
+        nodeSelector:
+          kubernetes.io/hostname: k8s-worker-0
   destination:
     server: https://kubernetes.default.svc
     namespace: default
