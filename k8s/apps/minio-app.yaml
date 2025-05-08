@@ -50,7 +50,7 @@ spec:
 
         extraEnvVars:
           - name: MINIO_SERVER_URL
-            value: "http://localhost:30000"
+            value: "http://129.114.25.200:30000"
           - name: BITNAMI_DEBUG
             value: "true"
 
