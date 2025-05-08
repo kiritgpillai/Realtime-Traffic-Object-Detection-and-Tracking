@@ -11,23 +11,36 @@ spec:
     targetRevision: 0.17.2
     helm:
       values: |
-        artifactRoot: s3://mlflow-artifacts
-        defaultArtifactRoot: s3://mlflow-artifacts
+        artifactRoot:
+          s3:
+            enabled: true
+            bucket: mlflow-artifacts
+            endpointUrl: http://129.114.25.200:30000
+            awsAccessKeyId: minioadmin
+            awsSecretAccessKey: miniopassword
+
         backendStore:
-          database:
-            postgresql:
-              enabled: true
-              auth:
-                username: mlflow
-                password: mlflowpassword
-                database: mlflowdb
-        extraEnv:
-          - name: MLFLOW_S3_ENDPOINT_URL
-            value: http://129.114.25.200:30001/
-          - name: AWS_ACCESS_KEY_ID
-            value: minioadmin
-          - name: AWS_SECRET_ACCESS_KEY
-            value: miniopassword
+          mysql:
+            enabled: true
+            host: mlflow-mysql.default.svc.cluster.local
+            port: 3306
+            database: mlflowdb
+            user: mlflow
+            password: mlflowpass
+            driver: pymysql
+
+        mysql:
+          enabled: true
+          auth:
+            username: mlflow
+            password: mlflowpass
+            database: mlflowdb
+
+        extraEnvVars:
+          MLFLOW_S3_ENDPOINT_URL: http://129.114.25.200:30000
+          AWS_ACCESS_KEY_ID: minioadmin
+          AWS_SECRET_ACCESS_KEY: miniopassword
+
   destination:
     server: https://kubernetes.default.svc
     namespace: default
