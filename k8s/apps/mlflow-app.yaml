@@ -37,7 +37,8 @@ spec:
         service:
           type: NodePort
           port: 5000
-          nodePort: 32000
+          name: http
+          annotations: {}
 
   destination:
     server: https://kubernetes.default.svc
