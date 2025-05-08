@@ -45,8 +45,8 @@ services:
         set -e
 
         echo "Uploading /data/labels → remote:$RCLONE_CONTAINER/labels"
-        rclone copy /data/labels chi_tacc:$RCLONE_CONTAINER/labels
-          --progress --transfers=16 --checkers=8 --fast-list
+        rclone copy /data/labels chi_tacc:$RCLONE_CONTAINER/labels \
+          --progress --transfers=32 --checkers=16 --multi-thread-streams=4 --fast-list
 
         echo "Upload complete. Listing remote:"
         rclone lsf chi_tacc:$RCLONE_CONTAINER
