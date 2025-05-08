@@ -12,11 +12,17 @@ spec:
     helm:
       values: |
         auth:
-          rootUser: minioadmin
-          rootPassword: minioadmin
+          rootUser: admin
+          rootPassword: changeme
         mode: standalone
         persistence:
-          enabled: false
+          enabled: true
+          existingClaim: minio-pvc
+        service:
+          type: NodePort
+          nodePorts:
+            api: 30000
+            console: 30001
   destination:
     server: https://kubernetes.default.svc
     namespace: default
