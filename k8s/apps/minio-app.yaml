@@ -15,30 +15,36 @@ spec:
           rootUser: admin
           rootPassword: admin
         mode: standalone
+
         persistence:
           enabled: true
           existingClaim: minio-pvc
+
         service:
           type: NodePort
           nodePorts:
             api: 30000
             console: 30001
-        nodeSelector:
-          kubernetes.io/hostname: k8s-master-0
-        podSecurityContext:
-          fsGroup: 1001
+
         livenessProbe:
           httpGet:
             path: /minio/health/live
             port: 9000
-          initialDelaySeconds: 60
+          initialDelaySeconds: 120
           periodSeconds: 10
+
         readinessProbe:
           httpGet:
             path: /minio/health/ready
             port: 9000
-          initialDelaySeconds: 60
+          initialDelaySeconds: 30
           periodSeconds: 10
+
+        nodeSelector:
+          kubernetes.io/hostname: k8s-master-0
+
+        podSecurityContext:
+          fsGroup: 1001
   destination:
     server: https://kubernetes.default.svc
     namespace: default
