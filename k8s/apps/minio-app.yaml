@@ -25,6 +25,8 @@ spec:
             console: 30001
         nodeSelector:
           kubernetes.io/hostname: k8s-worker-0
+        containerSecurityContext:
+          runAsUser: 0
   destination:
     server: https://kubernetes.default.svc
     namespace: default
