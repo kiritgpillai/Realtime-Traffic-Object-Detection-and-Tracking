@@ -45,6 +45,9 @@ spec:
 
         podSecurityContext:
           fsGroup: 1001
+        mc:
+          enabled: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: default
