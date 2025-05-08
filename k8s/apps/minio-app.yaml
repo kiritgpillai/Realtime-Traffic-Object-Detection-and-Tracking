@@ -10,8 +10,13 @@ spec:
     chart: minio
     targetRevision: 13.6.1
     helm:
-      valueFiles:
-        - minio-values.yaml
+      values: |
+        auth:
+          rootUser: minioadmin
+          rootPassword: minioadmin
+        mode: standalone
+        persistence:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: default
@@ -19,4 +24,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-  
