@@ -8,17 +8,20 @@ variable "flavor_name" {
   type        = string
 }
 
-variable "vm_name" {
-  description = "Name of the compute instance"
-  type        = string
+variable "master_count" {
+  description = "Number of Kubernetes master nodes"
+  type        = number
+  default     = 1
+}
+
+variable "worker_count" {
+  description = "Number of Kubernetes worker nodes"
+  type        = number
+  default     = 2
 }
 
 variable "volume_size" {
   description = "Size of the attached volume in GB"
   type        = number
-}
-
-variable "bucket_name" {
-  description = "Name of the object storage bucket"
-  type        = string
+  default     = 100
 }

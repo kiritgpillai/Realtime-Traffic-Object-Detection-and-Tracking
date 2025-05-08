@@ -1,0 +1,124 @@
+---
+- name: Disable swap
+  shell: swapoff -a
+
+- name: Comment out swap in fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*swap)'
+    replace: '# \1'
+
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - software-properties-common
+    state: present
+    update_cache: yes
+
+- name: Ensure /etc/apt/keyrings directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download and dearmor Kubernetes GPG key (correct binary format)
+  shell: |
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | \
+    gpg --dearmor | tee /etc/apt/keyrings/kubernetes-apt-keyring.gpg > /dev/null
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+- name: Set correct permissions on GPG key
+  file:
+    path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    mode: '0644'
+
+- name: Add Kubernetes APT repository (new community repo)
+  copy:
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    content: |
+      deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+
+- name: Install Kubernetes components
+  apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+
+- name: Hold kubelet/kubeadm/kubectl
+  shell: |
+    apt-mark hold kubelet kubeadm kubectl
+
+- name: Enable and start kubelet
+  systemd:
+    name: kubelet
+    enabled: true
+    state: started
+
+- name: Ensure br_netfilter module is loaded
+  shell: modprobe br_netfilter
+
+- name: Set sysctl params for Kubernetes networking
+  copy:
+    dest: /etc/sysctl.d/k8s.conf
+    content: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.ipv4.ip_forward                 = 1
+
+- name: Apply sysctl params
+  command: sysctl --system
+
+
+- name: Initialize Kubernetes master
+  command: kubeadm init --pod-network-cidr=10.244.0.0/16
+  args:
+    creates: /etc/kubernetes/admin.conf
+
+- name: Set up kubeconfig for root
+  shell: |
+    mkdir -p /root/.kube
+    cp /etc/kubernetes/admin.conf /root/.kube/config
+    chown root:root /root/.kube/config
+
+- name: Stop and disable firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Set up kubeconfig for cc user
+  become: yes
+  become_user: cc
+  shell: |
+    mkdir -p /home/cc/.kube
+    cp -i /etc/kubernetes/admin.conf /home/cc/.kube/config
+    chown $(id -u):$(id -g) /home/cc/.kube/config
+  args:
+    creates: /home/cc/.kube/config
+
+- name: Install Flannel CNI
+  shell: |
+    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Output kubeadm join command
+  shell: kubeadm token create --print-join-command
+  register: join_cmd
+
+- name: Save join command for workers
+  copy:
+    content: "{{ join_cmd.stdout }}"
+    dest: /tmp/kubeadm_join.sh
