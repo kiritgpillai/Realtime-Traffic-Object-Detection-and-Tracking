@@ -1,42 +1,64 @@
-auth:
-  rootUser: admin
-  rootPassword: minioadmin
-mode: standalone
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: minio
+    targetRevision: 13.6.1
+    helm:
+      values: |
+        auth:
+          rootUser: admin
+          rootPassword: minioadmin
+        mode: standalone
 
-persistence:
-  enabled: true
-  existingClaim: minio-pvc
+        persistence:
+          enabled: true
+          existingClaim: minio-pvc
 
-defaultBuckets: mlflow
+        defaultBuckets: mlflow
 
-service:
-  type: NodePort
-  nodePorts:
-    api: 30000
-    console: 30001
+        service:
+          type: NodePort
+          nodePorts:
+            api: 30000
+            console: 30001
 
-livenessProbe:
-  httpGet:
-    path: /minio/health/live
-    port: 9000
-  initialDelaySeconds: 120
-  periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /minio/health/live
+            port: 9000
+          initialDelaySeconds: 120
+          periodSeconds: 10
 
-readinessProbe:
-  httpGet:
-    path: /minio/health/ready
-    port: 9000
-  initialDelaySeconds: 30
-  periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /minio/health/ready
+            port: 9000
+          initialDelaySeconds: 30
+          periodSeconds: 10
 
-nodeSelector:
-  kubernetes.io/hostname: k8s-master-0
+        nodeSelector:
+          kubernetes.io/hostname: k8s-master-0
 
-podSecurityContext:
-  fsGroup: 1001
+        podSecurityContext:
+          fsGroup: 1001
 
-extraEnvVars:
-  - name: MINIO_SERVER_URL
-    value: "http://localhost:30000"
-  - name: BITNAMI_DEBUG
-    value: "true"
+        extraEnvVars:
+          - name: MINIO_SERVER_URL
+            value: "http://localhost:30000"
+          - name: BITNAMI_DEBUG
+            value: "true"
+
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
