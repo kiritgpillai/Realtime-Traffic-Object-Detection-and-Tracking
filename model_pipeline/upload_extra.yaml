@@ -44,8 +44,8 @@ services:
       - |
         set -e
 
-        echo "Uploading extra_data/ → chi_tacc:$RCLONE_CONTAINER/"
-        rclone copy /data/extra_data chi_tacc:$RCLONE_CONTAINER \
+        echo "Uploading /data/labels → chi_tacc:$RCLONE_CONTAINER/"
+        rclone copy /data/labels chi_tacc:$RCLONE_CONTAINER \
           --progress --transfers=16 --checkers=8 --fast-list
 
         echo "Upload complete. Listing remote:"
