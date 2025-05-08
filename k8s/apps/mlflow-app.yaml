@@ -6,25 +6,28 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/community-charts/helm-charts
+    repoURL: https://community-charts.github.io/helm-charts
     chart: mlflow
-    targetRevision: 0.6.4
+    targetRevision: 0.17.2
     helm:
       values: |
+        artifactRoot: s3://mlflow-artifacts
+        defaultArtifactRoot: s3://mlflow-artifacts
         backendStore:
-          databaseMigration: true
           database:
-            dialect: sqlite
-            url: sqlite:///mlflow.db
-        artifactRoot:
-          s3:
-            bucket: mlflow-artifacts
-            endpointUrl: http://minio.default.svc.cluster.local:9000
-            accessKey: admin
-            secretKey: admin
-        service:
-          type: NodePort
-          nodePort: 30002
+            postgresql:
+              enabled: true
+              auth:
+                username: mlflow
+                password: mlflowpassword
+                database: mlflowdb
+        extraEnv:
+          - name: MLFLOW_S3_ENDPOINT_URL
+            value: http://129.114.25.200:30001/
+          - name: AWS_ACCESS_KEY_ID
+            value: minioadmin
+          - name: AWS_SECRET_ACCESS_KEY
+            value: miniopassword
   destination:
     server: https://kubernetes.default.svc
     namespace: default
