@@ -44,9 +44,11 @@ services:
       - |
         set -e
 
-        echo "Uploading /data/labels → chi_tacc:$RCLONE_CONTAINER/"
-        rclone copy /data/labels chi_tacc:$RCLONE_CONTAINER \
-          --progress --transfers=16 --checkers=8 --fast-list
+        rclone purge chi_tacc:$RCLONE_CONTAINER/val2017
+        rclone purge chi_tacc:$RCLONE_CONTAINER/train2017
+        echo "Uploading /data/labels → remote:$RCLONE_CONTAINER/labels"
+        rclone copy /data/labels chi_tacc:$RCLONE_CONTAINER/labels
+          --progress --transfers=32 --checkers=16 --multi-thread-streams=4 --fast-list
 
         echo "Upload complete. Listing remote:"
         rclone lsf chi_tacc:$RCLONE_CONTAINER
