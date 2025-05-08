@@ -15,19 +15,8 @@ spec:
           s3:
             enabled: true
             bucket: mlflow-artifacts
-            endpointUrl: http://129.114.25.200:30000
             awsAccessKeyId: minioadmin
             awsSecretAccessKey: miniopassword
-
-        backendStore:
-          mysql:
-            enabled: true
-            host: mlflow-mysql.default.svc.cluster.local
-            port: 3306
-            database: mlflowdb
-            user: mlflow
-            password: mlflowpass
-            driver: pymysql
 
         mysql:
           enabled: true
@@ -36,10 +25,19 @@ spec:
             password: mlflowpass
             database: mlflowdb
 
+        backendStore:
+          mysql:
+            enabled: false
+
         extraEnvVars:
           MLFLOW_S3_ENDPOINT_URL: http://129.114.25.200:30000
           AWS_ACCESS_KEY_ID: minioadmin
           AWS_SECRET_ACCESS_KEY: miniopassword
+
+        service:
+          type: NodePort
+          port: 5000
+          nodePort: 32000
 
   destination:
     server: https://kubernetes.default.svc
