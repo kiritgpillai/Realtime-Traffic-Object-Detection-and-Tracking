@@ -14,9 +14,13 @@ spec:
         artifactRoot:
           s3:
             enabled: true
-            bucket: mlflow-artifacts
+            bucket: mlflow
             awsAccessKeyId: minioadmin
             awsSecretAccessKey: miniopassword
+
+        backendStore:
+          mysql:
+            enabled: false
 
         mysql:
           enabled: true
@@ -24,10 +28,9 @@ spec:
             username: mlflow
             password: mlflowpass
             database: mlflowdb
-
-        backendStore:
-          mysql:
-            enabled: false
+          primary:
+            persistence:
+              enabled: false
 
         extraEnvVars:
           MLFLOW_S3_ENDPOINT_URL: http://129.114.25.200:30000
