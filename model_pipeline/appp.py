@@ -1,11 +1,11 @@
-# app.py
+
 
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 
-app = FastAPI()
+appp = FastAPI()
 
-@app.get("/", response_class=PlainTextResponse)
+@appp.get("/", response_class=PlainTextResponse)
 async def read_root():
     return "Hello, World!"
 
