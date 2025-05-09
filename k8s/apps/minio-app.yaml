@@ -14,7 +14,8 @@ spec:
         auth:
           rootUser: minioadmin
           rootPassword: miniopassword
-        mode: standalonee
+        
+        mode: standalone
 
         persistence:
           enabled: true
