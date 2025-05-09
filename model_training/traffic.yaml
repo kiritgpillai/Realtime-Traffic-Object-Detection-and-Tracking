@@ -1,0 +1,13 @@
+path: /home/jovyan/datasets/coco
+train: /home/jovyan/datasets/coco/train2017.txt
+val: /home/jovyan/datasets/coco/val2017.txt
+nc: 8
+names:
+- person
+- bicycle
+- car
+- motorcycle
+- bus
+- truck
+- traffic light
+- stop sign

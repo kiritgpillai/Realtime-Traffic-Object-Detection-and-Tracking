@@ -1,0 +1,23 @@
+# config.yaml - Configuration for COCO Object Detection with MLflow
+
+# MLflow settings
+tracking_uri: "129.114.25.200:30938"  # Update this with your MLflow server URI
+experiment_name: "coco-detection"
+
+# Model settings
+model_weights: "yolov8n.pt"  # Use a small model for testing, options: yolov8n.pt, yolov8s.pt, yolov8m.pt, etc.
+
+# Training settings
+epochs: 1
+imgsz: 640
+batch_size: 16
+project: "runs/coco"
+run_name: "coco_detection_v1"
+
+# Resource settings
+gpus: "0"  # Comma-separated list of GPU indices, e.g., "0,1" for multi-GPU
+workers: 4
+cache: true  # Cache images for faster training
+
+# Advanced settings
+patience: 30  # Early stopping patience
