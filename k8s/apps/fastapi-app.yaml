@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: fastapi-gateway
+  name: cpu-infer
   namespace: argocd
 spec:
   project: default

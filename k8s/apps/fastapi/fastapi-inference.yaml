@@ -1,37 +1,44 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi-gateway
-  namespace: default
+  name: cpu-infer
+  labels:
+    app: cpu-infer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fastapi-gateway
+      app: cpu-infer
   template:
     metadata:
       labels:
-        app: fastapi-gateway
+        app: cpu-infer
     spec:
       containers:
-      - name: fastapi-gateway
-        image: vc411892/fastapi-gateway:latest
-        ports:
-        - containerPort: 5000
-        env:
-        - name: GPU_PREDICT_URL
-          value: "http://129.114.108.145:5000/"
+        - name: fastapi
+          image: vc411892/cpu-infer:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MODEL_URL
+              value: http://129.114.25.200:30001/models/best.pt
+            - name: AWS_ACCESS_KEY_ID
+              value: minioadmin
+            - name: AWS_SECRET_ACCESS_KEY
+              value: miniopassword
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: fastapi-gateway
-  namespace: default
+  name: cpu-infer
 spec:
-  selector:
-    app: fastapi-gateway
   type: NodePort
+  selector:
+    app: cpu-infer
   ports:
-  - port: 5000
-    targetPort: 5000
-    nodePort: 30500
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 30500
+
