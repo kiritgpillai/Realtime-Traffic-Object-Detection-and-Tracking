@@ -12,7 +12,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   hostPath:
-    path: /mnt/data
+    path: /mnt/data/minio
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
