@@ -27,3 +27,33 @@ spec:
       storage: 20Gi
   volumeName: prometheus-pv
   storageClassName: ""
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: alertmanager-pv
+  namespace: default
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /mnt/data/alertmanager
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage-prometheus-alertmanager-0
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: alertmanager-pv
+  storageClassName: ""

@@ -12,6 +12,7 @@ spec:
     helm:
       values: |
         server:
+          enabled: true  
           service:
             type: NodePort
             nodePort: 30090
