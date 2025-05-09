@@ -20,7 +20,7 @@ spec:
         - containerPort: 5000
         env:
         - name: GPU_PREDICT_URL
-          value: "http://<gpu-node-ip>:5000/predict"
+          value: "http://129.114.108.145:5000"
 ---
 apiVersion: v1
 kind: Service
