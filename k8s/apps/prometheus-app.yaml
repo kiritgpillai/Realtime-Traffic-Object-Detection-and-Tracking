@@ -18,6 +18,10 @@ spec:
           nodeSelector:
             kubernetes.io/hostname: k8s-master-0
 
+          persistentVolume:
+            enabled: true
+            existingClaim: prometheus-server
+
         serverFiles:
           prometheus.yml:
             scrape_configs:
