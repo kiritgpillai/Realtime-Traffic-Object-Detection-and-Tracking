@@ -12,7 +12,7 @@ spec:
     helm:
       values: |
         adminUser: admin
-        adminPassword: admin
+        adminPassword: grafanapassword
         service:
           type: NodePort
           nodePort: 30091
