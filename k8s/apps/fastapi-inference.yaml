@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-gateway
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi-gateway
+  template:
+    metadata:
+      labels:
+        app: fastapi-gateway
+    spec:
+      containers:
+      - name: fastapi-gateway
+        image: vc411892/fastapi-gateway:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: GPU_PREDICT_URL
+          value: "http://<gpu-node-ip>:5000/predict"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-gateway
+  namespace: default
+spec:
+  selector:
+    app: fastapi-gateway
+  type: NodePort
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30500
