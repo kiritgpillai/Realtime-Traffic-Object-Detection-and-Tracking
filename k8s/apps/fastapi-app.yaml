@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: git@github.com:kiritgpillai/Realtime-Traffic-Object-Detection-and-Tracking.git
     targetRevision: model-serving
-    path: k8s/apps
+    path: k8s/apps/fastapi
   destination:
     server: https://kubernetes.default.svc
     namespace: default
