@@ -30,7 +30,8 @@ spec:
             database: mlflowdb
           primary:
             persistence:
-              enabled: false
+              enabled: true
+              existingClaim: mysql-pvc
 
         extraEnvVars:
           MLFLOW_S3_ENDPOINT_URL: http://129.114.25.200:30000
