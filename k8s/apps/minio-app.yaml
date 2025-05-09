@@ -11,38 +11,22 @@ spec:
     targetRevision: 16.0.8
     helm:
       values: |
+        mode: standalone
+
         auth:
           rootUser: minioadmin
           rootPassword: miniopassword
-        
-        mode: standalone
 
         persistence:
           enabled: true
           existingClaim: minio-pvc
           mountPath: /bitnami/minio/data
 
-        defaultBuckets: mlflow
-
         service:
           type: NodePort
           nodePorts:
             api: 30000
             console: 30001
-
-        livenessProbe:
-          httpGet:
-            path: /minio/health/live
-            port: 9000
-          initialDelaySeconds: 120
-          periodSeconds: 10
-
-        readinessProbe:
-          httpGet:
-            path: /minio/health/ready
-            port: 9000
-          initialDelaySeconds: 30
-          periodSeconds: 10
 
         nodeSelector:
           kubernetes.io/hostname: k8s-master-0
@@ -55,7 +39,6 @@ spec:
             value: "http://129.114.25.200:30000"
           - name: BITNAMI_DEBUG
             value: "true"
-
 
   destination:
     server: https://kubernetes.default.svc
