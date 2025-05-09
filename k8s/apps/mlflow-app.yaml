@@ -11,6 +11,8 @@ spec:
     targetRevision: 0.17.2
     helm:
       values: |
+        flaskServerSecretKey: ""
+
         artifactRoot:
           s3:
             enabled: true
@@ -19,19 +21,7 @@ spec:
             awsSecretAccessKey: miniopassword
 
         backendStore:
-          mysql:
-            enabled: false
-
-        mysql:
-          enabled: true
-          auth:
-            username: mlflow
-            password: mlflowpass
-            database: mlflowdb
-          primary:
-            persistence:
-              enabled: true
-              existingClaim: mysql-pvc
+          defaultSqlitePath: /mlflow/mlruns.db
 
         extraEnvVars:
           MLFLOW_S3_ENDPOINT_URL: http://129.114.25.200:30000
