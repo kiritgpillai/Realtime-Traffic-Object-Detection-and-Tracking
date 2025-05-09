@@ -14,11 +14,12 @@ spec:
         auth:
           rootUser: minioadmin
           rootPassword: miniopassword
-        mode: standalone
+        mode: standalonee
 
         persistence:
           enabled: true
           existingClaim: minio-pvc
+          mountPath: /bitnami/minio/data
 
         defaultBuckets: mlflow
 
