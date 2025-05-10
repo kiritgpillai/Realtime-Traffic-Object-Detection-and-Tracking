@@ -34,6 +34,9 @@ spec:
           name: http
           annotations: {}
 
+        nodeSelector:
+          kubernetes.io/hostname: k8s-master-0
+
   destination:
     server: https://kubernetes.default.svc
     namespace: default
