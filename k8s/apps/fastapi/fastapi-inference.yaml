@@ -14,7 +14,7 @@ spec:
       labels:
         app: video-infer
       annotations:
-        redeploy-ts: "2025-05-10-18:07"
+        redeploy-ts: "2025-05-10-18:08"
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-master-0
@@ -22,7 +22,7 @@ spec:
         - name: fastapi
           image: vc411892/video-infer:latest
           ports:
-            - containerPort: 8000
+            - containerPort: 5000
 ---
 apiVersion: v1
 kind: Service
@@ -34,6 +34,6 @@ spec:
     app: video-infer
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
+      port: 5000
+      targetPort: 5000
       nodePort: 30500
