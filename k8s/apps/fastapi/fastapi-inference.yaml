@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cpu-infer
+  name: video-infer
   labels:
-    app: cpu-infer
+    app: video-infer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cpu-infer
+      app: video-infer
   template:
     metadata:
       labels:
-        app: cpu-infer
+        app: video-infer
       annotations:
         redeploy-ts: "2025-05-10-17:30"
     spec:
       containers:
         - name: fastapi
-          image: vc411892/cpu-infer:latest
+          image: vc411892/video-infer:latest
           ports:
             - containerPort: 5000
 
@@ -26,11 +26,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: cpu-infer
+  name: video-infer
 spec:
   type: NodePort
   selector:
-    app: cpu-infer
+    app: video-infer
   ports:
     - protocol: TCP
       port: 5000
