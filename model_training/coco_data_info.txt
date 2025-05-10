@@ -1,0 +1,6 @@
+COCO root:        /home/jovyan/datasets/coco
+Train images:     /home/jovyan/datasets/coco/train2017.txt
+Val images:       /home/jovyan/datasets/coco/val2017.txt
+Test images:      /home/jovyan/datasets/coco/test-dev2017.txt
+Annotations dir:  /home/jovyan/work/coco/annotations
+Labels dir:       /home/jovyan/work/coco/labels
