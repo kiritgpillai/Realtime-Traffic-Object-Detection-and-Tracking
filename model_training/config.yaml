@@ -1,22 +1,29 @@
-# config.yaml - Configuration for COCO Object Detection with MLflow
+# config.yaml - Enhanced Configuration for COCO Object Detection with MLflow and MinIO
 
 # MLflow settings
-tracking_uri: "129.114.25.200:30938"  # Update this with your MLflow server URI
+tracking_uri: "http://129.114.25.200:30938"
 experiment_name: "coco-detection"
 
+# MinIO (S3) storage settings for MLflow artifacts
+minio_endpoint: "http://129.114.25.200:30000"
+minio_access_key: "minioadmin"
+minio_secret_key: "miniopassword"
+
 # Model settings
-model_weights: "yolov8n.pt"  # Use a small model for testing, options: yolov8n.pt, yolov8s.pt, yolov8m.pt, etc.
+model_weights: "yolov8n.pt"  # Options: yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt, yolov8x.pt
+
+# Dataset settings
+coco_root: "/home/jovyan/work/datasets/coco"
 
 # Training settings
-epochs: 1
+epochs: 100
 imgsz: 640
-batch_size: 16
+batch_size: 16  # Will be auto-scaled based on available GPUs
 project: "runs/coco"
-run_name: "coco_detection_v1"
+run_name: "coco_detection_efficient_v1"
 
 # Resource settings
-gpus: "0"  # Comma-separated list of GPU indices, e.g., "0,1" for multi-GPU
-workers: 4
+workers: 8  # Will be auto-scaled based on available CPUs
 cache: true  # Cache images for faster training
 
 # Advanced settings
