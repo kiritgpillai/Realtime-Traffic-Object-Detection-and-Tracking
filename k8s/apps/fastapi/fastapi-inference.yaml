@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: cpu-infer
+      annotations:
+        redeploy-ts: "2025-05-10-17:"
     spec:
       containers:
         - name: fastapi
