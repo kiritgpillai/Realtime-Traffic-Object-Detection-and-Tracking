@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# amd_mi100_yolo_coco_training.py
-"""
-Efficient YOLO training on COCO dataset with MLflow tracking and MinIO storage.
-
-This script is optimized for AMD MI100 GPUs using ROCm, with automatic multi-GPU utilization,
-MLflow experiment tracking, and MinIO S3 storage for artifacts.
-"""
-
 import os
 import time
 import argparse
@@ -149,7 +140,7 @@ def detect_amd_gpus() -> Tuple[int, str]:
     except (subprocess.SubprocessError, subprocess.TimeoutExpired) as e:
         print(f"Error checking for AMD GPUs with rocm-smi: {e}")
     
-    # Try alternative method using hip-smi if rocm-smi failed
+    # Alternative method using hip-smi if rocm-smi failed (Added due to facing prior issues with rocm-smi)
     try:
         result = subprocess.run(
             ['hip-smi'],
@@ -171,7 +162,7 @@ def detect_amd_gpus() -> Tuple[int, str]:
     except (subprocess.SubprocessError, subprocess.TimeoutExpired) as e:
         print(f"Error checking for AMD GPUs with hip-smi: {e}")
         
-    # If direct detection failed, check for AMD environment variables
+    # check for AMD environment variables (Covering all bases to test for GPU)
     hip_devices = os.environ.get("HIP_VISIBLE_DEVICES", "")
     if hip_devices and hip_devices != "-1":
         gpu_count = len(hip_devices.split(","))
@@ -183,35 +174,23 @@ def detect_amd_gpus() -> Tuple[int, str]:
 
 
 def create_run_folder_name() -> str:
-    """
-    Create a sequential run folder name in the format run_X.
-    
-    Returns:
-        Run folder name as string
-    """
     run_number = get_next_run_number()
     return f"run_{run_number}"
 
 
 def setup_mlflow(cfg: Dict[str, Any], args: argparse.Namespace) -> None:
-    """
-    Set up MLflow and MinIO configurations.
-    
-    Args:
-        cfg: Configuration dictionary
-        args: Command line arguments
-    """
-    # Make sure to end any lingering MLflow runs
+
+    # End any lingering MLflow runs
     if mlflow.active_run():
         print("Ending any existing MLflow runs before starting")
         mlflow.end_run()
     
-    # Use global constants as defaults, but allow overrides
+    # Use global constants as defaults & allow overrides
     tracking_uri = args.tracking_uri or cfg.get("tracking_uri", MLFLOW_TRACKING_URI)
     experiment_name = args.experiment_name or cfg.get("experiment_name", MLFLOW_EXPERIMENT_NAME)
     minio_endpoint = args.minio_endpoint or cfg.get("minio_endpoint", MINIO_ENDPOINT_URL)
     
-    # Update the config with the values we'll use
+    # Update the config with our values
     cfg["tracking_uri"] = tracking_uri
     cfg["experiment_name"] = experiment_name
     cfg["minio_endpoint"] = minio_endpoint
@@ -255,16 +234,7 @@ def setup_mlflow(cfg: Dict[str, Any], args: argparse.Namespace) -> None:
 
 
 def setup_dataset(cfg: Dict[str, Any], data_yaml_path: str) -> Dict[str, Any]:
-    """
-    Set up dataset configurations.
-    
-    Args:
-        cfg: Configuration dictionary
-        data_yaml_path: Path to data YAML file
-        
-    Returns:
-        Dataset configuration dictionary
-    """
+
     # Set dataset directory in ultralytics settings
     coco_root = cfg.get("coco_root", "/home/jovyan/work/datasets/coco")
     settings.update({"datasets_dir": str(Path(coco_root).parent)})
