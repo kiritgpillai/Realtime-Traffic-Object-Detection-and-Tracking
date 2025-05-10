@@ -14,7 +14,7 @@ spec:
       labels:
         app: video-infer
       annotations:
-        redeploy-ts: "2025-05-10-18:02"
+        redeploy-ts: "2025-05-10-18:03"
     spec:
       containers:
         - name: fastapi
