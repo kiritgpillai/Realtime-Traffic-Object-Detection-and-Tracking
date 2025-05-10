@@ -24,7 +24,7 @@ spec:
           defaultSqlitePath: /mlflow/mlruns.db
 
         extraEnvVars:
-          MLFLOW_S3_ENDPOINT_URL: http://129.114.25.200:30000
+          MLFLOW_S3_ENDPOINT_URL: http://129.114.27.202:30000
           AWS_ACCESS_KEY_ID: minioadmin
           AWS_SECRET_ACCESS_KEY: miniopassword
 

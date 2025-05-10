@@ -24,6 +24,9 @@ spec:
 
         service:
           type: NodePort
+          ports:
+            api: 9000
+            console: 9001
           nodePorts:
             api: 30000
             console: 30001
@@ -36,7 +39,7 @@ spec:
 
         extraEnvVars:
           - name: MINIO_SERVER_URL
-            value: "http://129.114.25.200:30000"
+            value: "http://129.114.27.202:30000"
           - name: BITNAMI_DEBUG
             value: "true"
 
