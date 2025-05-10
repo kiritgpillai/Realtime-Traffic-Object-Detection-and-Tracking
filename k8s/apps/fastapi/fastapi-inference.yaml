@@ -19,13 +19,6 @@ spec:
           image: vc411892/cpu-infer:latest
           ports:
             - containerPort: 5000
-          env:
-            - name: MODEL_URL
-              value: http://129.114.25.200:30001/models/best.pt
-            - name: AWS_ACCESS_KEY_ID
-              value: minioadmin
-            - name: AWS_SECRET_ACCESS_KEY
-              value: miniopassword
 
 ---
 apiVersion: v1

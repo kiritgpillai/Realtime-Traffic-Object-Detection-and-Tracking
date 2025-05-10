@@ -31,7 +31,7 @@ spec:
                   - targets: ['localhost:9090']
               - job_name: 'cpu-infer'
                 static_configs:
-                  - targets: ['cpu-infer.default.svc.cluster.local:5000']
+                  - targets: ['129.114.25.200:30500']
   destination:
     server: https://kubernetes.default.svc
     namespace: default
