@@ -10,4 +10,4 @@ services:
     command: >
       bash -c "apt update && apt install -y ffmpeg wget &&
                pip install streamlit opencv-python-headless pandas numpy altair yt-dlp &&
-               streamlit run model_pipeline/streamlit_page.py --server.port=8502 --server.address=0.0.0.0"
+               streamlit run streamlit_page.py --server.port=8502 --server.address=0.0.0.0"
