@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: video-infer
+  name: image-infer
   labels:
-    app: video-infer
+    app: image-infer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: video-infer
+      app: image-infer
   template:
     metadata:
       labels:
-        app: video-infer
+        app: image-infer
       annotations:
         redeploy-ts: "2025-05-11-8:20"
     spec:
@@ -29,11 +29,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: video-infer
+  name: image-infer
 spec:
   type: NodePort
   selector:
-    app: video-infer
+    app: image-infer
   ports:
     - protocol: TCP
       port: 8001
