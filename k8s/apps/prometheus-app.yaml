@@ -28,7 +28,7 @@ spec:
             scrape_configs:
               - job_name: 'prometheus'
                 static_configs:
-                  - targets: ['localhost:8001']
+                  - targets: ['localhost:9090']
               - job_name: 'image-infer'
                 static_configs:
                   - targets: ['129.114.27.202:30501']
