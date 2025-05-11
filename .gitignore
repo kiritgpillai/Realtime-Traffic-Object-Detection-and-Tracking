@@ -2,3 +2,4 @@ infra/terraform.tfstate
 infra/terraform.tfstate.backup
 video-inference-service/
 testimages/
+image-inference/
