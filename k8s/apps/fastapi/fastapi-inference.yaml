@@ -14,7 +14,7 @@ spec:
       labels:
         app: video-infer
       annotations:
-        redeploy-ts: "2025-05-10-18:12"
+        redeploy-ts: "2025-05-10-18:14"
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-master-0

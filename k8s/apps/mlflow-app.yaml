@@ -19,6 +19,8 @@ spec:
             bucket: mlflow
             awsAccessKeyId: minioadmin
             awsSecretAccessKey: miniopassword
+            endpoint: http://129.114.27.202:30000
+            secure: false
 
         backendStore:
           defaultSqlitePath: /mlflow/mlruns.db
