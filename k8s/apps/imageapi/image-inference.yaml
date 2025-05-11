@@ -14,7 +14,7 @@ spec:
       labels:
         app: image-infer
       annotations:
-        redeploy-ts: "2025-05-11-8:25"
+        redeploy-ts: "2025-05-11-8:26"
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-master-0
