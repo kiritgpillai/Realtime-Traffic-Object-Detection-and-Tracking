@@ -28,10 +28,10 @@ spec:
             scrape_configs:
               - job_name: 'prometheus'
                 static_configs:
-                  - targets: ['localhost:9090']
-              - job_name: 'cpu-infer'
+                  - targets: ['localhost:8001']
+              - job_name: 'image-infer'
                 static_configs:
-                  - targets: ['129.114.27.202:30500']
+                  - targets: ['129.114.27.202:30501']
   destination:
     server: https://kubernetes.default.svc
     namespace: default
