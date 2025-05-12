@@ -65,12 +65,14 @@ The COCO dataset originally contains a wide range of object classes. For our app
 
 The dataset consists of approximately **118,000 training images**, **5,000 validation images**, and **20,000 testing images**, summing up to around **25GB** including the labels. These images cover a diverse set of real-world scenarios and include annotations for multiple object classes. By filtering for traffic-specific classes, we tailored the dataset to better match our application requirements.
 
+The dataset can be accessed on the object store container in CHI@TACC under [object-persist-30](https://chi.tacc.chameleoncloud.org/project/containers/container/object-persist-project30)
+
 | Name   | Description/How It Was Created                                                                                                           | Conditions of Use   |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | COCO   | A large-scale object detection dataset containing diverse objects in context, used as the base for fine-tuning traffic-specific classes. | Open-source (GPLv3) |
 | YOLOv8 | An object detection model in the Ultralytics library known for its high speed and accuracy, suitable for real-time applications.         | Open-source (GPLv3) |
 
-The dataset can be accessed on the object store container in CHI@TACC under [object-persist-30](https://chi.tacc.chameleoncloud.org/project/containers/container/object-persist-project30)
+
 ---
 ## Infrastructure Requirements
 
