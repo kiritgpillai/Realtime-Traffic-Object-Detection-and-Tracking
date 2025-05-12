@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Inference Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/blackA.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/slate.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/blue.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/green.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@radix-ui/colors@latest/red.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Object Detection and Tracking</h1>
+        </header>
+        <main>
+            <section class="upload-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Upload Media</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-box">
+                            <h3>Inference Settings</h3>
+                            <!-- <p>This service uses the latest YOLO model from MLflow for inference.</p> -->
+                        </div>
+                        
+                        <form id="uploadForm">
+                            <div class="file-input-container">
+                                <label class="file-input-label" for="videoFile">Select Image or Video File</label>
+                                <div class="file-input-wrapper">
+                                    <button type="button" class="file-input-button" onclick="document.getElementById('videoFile').click()">Choose File</button>
+                                    <input type="file" id="videoFile" name="file" accept="image/*,video/*" required>
+                                    <span id="fileName" class="file-name-display">No file chosen</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confidenceThreshold">
+                                    Confidence Threshold
+                                    <span class="value-display" id="confidenceValue">0.25</span>
+                                </label>
+                                <input type="range" id="confidenceThreshold" name="confidence" min="0.05" max="0.95" step="0.05" value="0.25">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="iouThreshold">
+                                    IOU Threshold
+                                    <span class="value-display" id="iouValue">0.45</span>
+                                </label>
+                                <input type="range" id="iouThreshold" name="iou" min="0.1" max="0.9" step="0.05" value="0.45">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="maxDetections">
+                                    Maximum Detections
+                                    <span class="value-display" id="maxDetValue">300</span>
+                                </label>
+                                <input type="range" id="maxDetections" name="max_det" min="50" max="1000" step="50" value="300">
+                            </div>
+                            
+                            <div class="action-button-container">
+                                <button type="submit" class="btn-primary" id="uploadButton">Upload and Process</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="processingCard" class="processing-section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 id="processingHeader">Processing Media</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-container">
+                            <div id="statusMessage">Initializing...</div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress">
+                                <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-value" id="framesProcessed">0</div>
+                                <div class="stat-label">Frames Processed</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="totalFrames">0</div>
+                                <div class="stat-label">Total Frames</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="elapsedTime">0s</div>
+                                <div class="stat-label">Elapsed Time</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="fps">0</div>
+                                <div class="stat-label">FPS</div>
+                            </div>
+                        </div>
+                        
+                        <div class="log-container">
+                            <label for="logWindow">Processing Log</label>
+                            <div id="logWindow" class="log-window"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="resultCard" class="result-section hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Processing Result</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultMessage" class="alert success">Processing completed successfully!</div>
+                        
+                        <div class="video-container">
+                            <video id="resultVideo" controls>
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <a id="downloadLink" href="#" class="btn-primary" target="_blank">Download Processed Video</a>
+                            <button id="newProcessingButton" class="btn-secondary">Process Another Video</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // Global variable to store job ID
+        let currentJobId = null;
+        let eventSource = null;
+        let logMessages = [];
+        const maxLogMessages = 100;
+        
+        // Update threshold displays
+        document.getElementById('confidenceThreshold').addEventListener('input', function() {
+            document.getElementById('confidenceValue').textContent = this.value;
+        });
+        
+        document.getElementById('iouThreshold').addEventListener('input', function() {
+            document.getElementById('iouValue').textContent = this.value;
+        });
+        
+        document.getElementById('maxDetections').addEventListener('input', function() {
+            document.getElementById('maxDetValue').textContent = this.value;
+        });
+        
+        // File input display
+        document.getElementById('videoFile').addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+            document.getElementById('fileName').textContent = fileName;
+        });
+        
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const mediaFile = document.getElementById('videoFile').files[0];
+            if (!mediaFile) {
+                alert('Please select a file');
+                return;
+            }
+            
+            // Update processing header based on file type
+            const isImage = mediaFile.type.startsWith('image/');
+            document.getElementById('processingHeader').textContent = isImage ? 'Processing Image' : 'Processing Video';
+            
+            // Show loading state
+            document.getElementById('uploadButton').disabled = true;
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('file', mediaFile);
+            formData.append('confidence', document.getElementById('confidenceThreshold').value);
+            formData.append('iou', document.getElementById('iouThreshold').value);
+            formData.append('max_det', document.getElementById('maxDetections').value);
+            
+            console.log('Sending request with file:', mediaFile.name);
+            
+            // Send request
+            fetch('/api/inference', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide upload form, show processing card
+                document.getElementById('uploadButton').disabled = false;
+                document.getElementById('processingCard').classList.remove('hidden');
+                document.getElementById('processingCard').classList.add('active');
+                
+                // Store job ID and start monitoring progress
+                currentJobId = data.job_id;
+                monitorJobProgress(currentJobId);
+                
+                // Clear log window
+                logMessages = [];
+                document.getElementById('logWindow').innerHTML = '';
+                
+                // Reset statistics
+                document.getElementById('framesProcessed').textContent = '0';
+                document.getElementById('totalFrames').textContent = '0';
+                document.getElementById('elapsedTime').textContent = '0s';
+                document.getElementById('fps').textContent = '0';
+            })
+            .catch(error => {
+                console.error('Error starting inference:', error);
+                document.getElementById('uploadButton').disabled = false;
+                alert('Error starting inference: ' + error.message);
+            });
+        });
+        
+        // Monitor job progress
+        function monitorJobProgress(jobId) {
+            // Close any existing event source
+            if (eventSource) {
+                eventSource.close();
+            }
+            
+            // Start server-sent events
+            eventSource = new EventSource(`/api/jobs/${jobId}/stream`);
+            
+            eventSource.addEventListener('update', function(event) {
+                const data = JSON.parse(event.data);
+                updateProgressUI(data);
+            });
+            
+            eventSource.addEventListener('complete', function(event) {
+                const data = JSON.parse(event.data);
+                eventSource.close();
+                
+                if (data.status === 'completed') {
+                    showResults(jobId);
+                } else if (data.status === 'error') {
+                    showError(data.message);
+                }
+            });
+            
+            eventSource.onerror = function(error) {
+                console.error('EventSource error:', error);
+                eventSource.close();
+            };
+        }
+        
+        // Update progress UI
+        function updateProgressUI(data) {
+            // Update progress bar
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${data.progress}%`;
+            progressBar.textContent = `${data.progress}%`;
+            progressBar.setAttribute('aria-valuenow', data.progress);
+            
+            // Update status message
+            document.getElementById('statusMessage').textContent = data.message;
+            
+            // Add message to log if it's new
+            if (data.message && !logMessages.includes(data.message)) {
+                logMessages.push(data.message);
+                
+                // Trim log if too large
+                if (logMessages.length > maxLogMessages) {
+                    logMessages.shift();
+                }
+                
+                const logWindow = document.getElementById('logWindow');
+                logWindow.innerHTML = '';
+                
+                // Add all messages to log
+                logMessages.forEach(message => {
+                    const logLine = document.createElement('div');
+                    logLine.textContent = message;
+                    logWindow.appendChild(logLine);
+                });
+                
+                // Scroll to bottom
+                logWindow.scrollTop = logWindow.scrollHeight;
+            }
+            
+            // Update statistics
+            if (data.frames_processed) {
+                document.getElementById('framesProcessed').textContent = data.frames_processed;
+            }
+            
+            if (data.total_frames) {
+                document.getElementById('totalFrames').textContent = data.total_frames;
+            }
+            
+            if (data.elapsed_time) {
+                const minutes = Math.floor(data.elapsed_time / 60);
+                const seconds = Math.floor(data.elapsed_time % 60);
+                document.getElementById('elapsedTime').textContent = 
+                    (minutes > 0 ? `${minutes}m ` : '') + `${seconds}s`;
+                
+                // Calculate FPS if we have frames and time
+                if (data.frames_processed && data.elapsed_time > 0) {
+                    const fps = (data.frames_processed / data.elapsed_time).toFixed(1);
+                    document.getElementById('fps').textContent = fps;
+                }
+            }
+        }
+        
+        // Show results
+        function showResults(jobId) {
+            // Hide processing card, show result card
+            document.getElementById('processingCard').classList.add('hidden');
+            document.getElementById('processingCard').classList.remove('active');
+            document.getElementById('resultCard').classList.remove('hidden');
+            document.getElementById('resultCard').classList.add('active');
+            
+            console.log("Getting job details for job ID:", jobId);
+            
+            // Get job status to determine if it's an image or video
+            fetch(`/api/jobs/${jobId}`)
+                .then(response => {
+                    console.log("Job details response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(jobData => {
+                    console.log("Job details received:", jobData);
+                    const isImage = jobData.file_type === 'image';
+                    const resultUrl = `/api/results/${jobId}`;
+                    
+                    // Update UI based on media type
+                    if (isImage) {
+                        // For images, use an img element
+                        const videoContainer = document.querySelector('.video-container');
+                        videoContainer.innerHTML = `<img src="${resultUrl}" alt="Processed Image" style="max-width:100%;">`;
+                        
+                        // Update download link text
+                        document.getElementById('downloadLink').textContent = 'Download Processed Image';
+                    } else {
+                        // For videos, use the video element
+                        const resultVideo = document.getElementById('resultVideo');
+                        resultVideo.src = resultUrl;
+                        resultVideo.style.display = 'block';
+                        
+                        // Update download link text
+                        document.getElementById('downloadLink').textContent = 'Download Processed Video';
+                    }
+                    
+                    // Set download link
+                    const downloadLink = document.getElementById('downloadLink');
+                    downloadLink.href = resultUrl;
+                    downloadLink.download = true;
+                    downloadLink.style.display = 'inline-flex';
+                    
+                    // Update result message
+                    const resultMessage = document.getElementById('resultMessage');
+                    resultMessage.textContent = `Processing completed successfully!`;
+                    resultMessage.classList.remove('error');
+                    resultMessage.classList.add('success');
+                })
+                .catch(error => {
+                    console.error('Error getting job details:', error);
+                    
+                    // Try legacy endpoint as fallback
+                    console.log("Trying legacy endpoint as fallback");
+                    fetch(`/api/video/${jobId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            // If we can access the legacy endpoint, set it up for video
+                            const resultVideo = document.getElementById('resultVideo');
+                            resultVideo.src = `/api/video/${jobId}`;
+                            resultVideo.style.display = 'block';
+                            
+                            // Update download link
+                            const downloadLink = document.getElementById('downloadLink');
+                            downloadLink.href = `/api/video/${jobId}`;
+                            downloadLink.textContent = 'Download Processed Video';
+                            downloadLink.download = true;
+                            downloadLink.style.display = 'inline-flex';
+                            
+                            // Update result message
+                            const resultMessage = document.getElementById('resultMessage');
+                            resultMessage.textContent = `Processing completed successfully!`;
+                            resultMessage.classList.remove('error');
+                            resultMessage.classList.add('success');
+                        })
+                        .catch(finalError => {
+                            console.error('Error with fallback endpoint:', finalError);
+                            showError('Could not load result details. Please try again.');
+                        });
+                });
+            
+            // Handle new processing button
+            document.getElementById('newProcessingButton').addEventListener('click', function() {
+                document.getElementById('resultCard').classList.add('hidden');
+                document.getElementById('resultCard').classList.remove('active');
+                document.getElementById('uploadForm').reset();
+                document.getElementById('fileName').textContent = 'No file chosen';
+                document.getElementById('confidenceValue').textContent = '0.25';
+                document.getElementById('iouValue').textContent = '0.45';
+                document.getElementById('maxDetValue').textContent = '300';
+            });
+        }
+        
+        // Show error
+        function showError(message) {
+            document.getElementById('processingCard').classList.add('hidden');
+            document.getElementById('processingCard').classList.remove('active');
+            document.getElementById('resultCard').classList.remove('hidden');
+            document.getElementById('resultCard').classList.add('active');
+            
+            const resultMessage = document.getElementById('resultMessage');
+            resultMessage.textContent = `Error: ${message}`;
+            resultMessage.classList.remove('success');
+            resultMessage.classList.add('error');
+            
+            // Hide video and download button
+            document.getElementById('resultVideo').style.display = 'none';
+            document.getElementById('downloadLink').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
