@@ -1,0 +1,5 @@
+- hosts: k8s_worker
+  become: yes
+  roles:
+    - containerd
+    - k8s-worker

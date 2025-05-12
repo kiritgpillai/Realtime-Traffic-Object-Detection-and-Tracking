@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: minio
+    targetRevision: 16.0.8
+    helm:
+      values: |
+        mode: standalone
+
+        auth:
+          rootUser: minioadmin
+          rootPassword: miniopassword
+
+        persistence:
+          enabled: true
+          existingClaim: minio-pvc
+          mountPath: /bitnami/minio/data
+
+        service:
+          type: NodePort
+          ports:
+            api: 9000
+            console: 9001
+          nodePorts:
+            api: 30000
+            console: 30001
+
+        nodeSelector:
+          kubernetes.io/hostname: k8s-master-0
+
+        podSecurityContext:
+          fsGroup: 1001
+
+        extraEnvVars:
+          - name: MINIO_SERVER_URL
+            value: "http://129.114.27.202:30000"
+          - name: BITNAMI_DEBUG
+            value: "true"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
