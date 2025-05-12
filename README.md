@@ -33,6 +33,7 @@ All design decisions in this project are specifically tailored to meet the needs
 * Inferencing is performed by referencing the model from the bucket and passing the video or image uploaded by the user for evaluation.
 * Hardware includes GPU instances (e.g., AMD MI100 GPUs and NVIDIA A100 GPUs for high-performance training) on Chameleon Cloud.
 * The training process logs metrics and saves models to the registry (using MLflow for experiment tracking and model versioning).
+* The models were trained on GPU Leases on [CHI@TACC](https://chi.tacc.chameleoncloud.org/) under compute_liqid for A100 gpus and under gpu_mi100 for the AMD MI100 gpus
 
 #### Model Serving and API Layer
 
@@ -47,6 +48,8 @@ All design decisions in this project are specifically tailored to meet the needs
 * [Terraform](./model-serving/infra) scripts manage cloud infrastructure, including VMs, containers, and networking.
 * [Ansible](./model-serving/ansible) was used to automate the configuration of servers and manage deployment environments.
 
+The contents of the pipeline are stored on the block store in [KVM@TACC](https://kvm.tacc.chameleoncloud.org/) under the k8s-master-0 store with the floating I/P 129.114.27.202
+
 #### Monitoring and Evaluation Tools
 
 * The system undergoes testing phases before production updates.
@@ -60,13 +63,14 @@ All design decisions in this project are specifically tailored to meet the needs
 
 The COCO dataset originally contains a wide range of object classes. For our application, we concentrated the dataset to include only the classes relevant to traffic monitoring, such as cars, buses, trucks, motorcycles, and bicycles. We carefully filtered out unrelated classes to streamline the model's focus on vehicle detection, which significantly improved inference speed and accuracy for our use case. This class concentration was crucial to ensure the model's robustness when deployed in real-time traffic scenarios.
 
-The COCO dataset consists of approximately **118,000 training images**, **5,000 validation images**, and **20,000 testing images**, summing up to around **25GB** including the labels. These images cover a diverse set of real-world scenarios and include annotations for multiple object classes. By filtering for traffic-specific classes, we tailored the dataset to better match our application requirements.
+The dataset consists of approximately **118,000 training images**, **5,000 validation images**, and **20,000 testing images**, summing up to around **25GB** including the labels. These images cover a diverse set of real-world scenarios and include annotations for multiple object classes. By filtering for traffic-specific classes, we tailored the dataset to better match our application requirements.
 
 | Name   | Description/How It Was Created                                                                                                           | Conditions of Use   |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | COCO   | A large-scale object detection dataset containing diverse objects in context, used as the base for fine-tuning traffic-specific classes. | Open-source (GPLv3) |
 | YOLOv8 | An object detection model in the Ultralytics library known for its high speed and accuracy, suitable for real-time applications.         | Open-source (GPLv3) |
 
+The dataset can be accessed on the object store container in CHI@TACC under [object-persist-30](https://chi.tacc.chameleoncloud.org/project/containers/container/object-persist-project30)
 ---
 ## Infrastructure Requirements
 
