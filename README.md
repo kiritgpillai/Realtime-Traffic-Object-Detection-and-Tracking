@@ -18,8 +18,9 @@ Our project aims to enhance real-time traffic monitoring by replacing manual or 
 All design decisions in this project are specifically tailored to meet the needs of the New York City Department of Transportation (NYC DOT). As one of the most complex and heavily trafficked urban environments, New York City requires a robust, scalable, and real-time traffic monitoring system to address congestion, traffic violations, and pedestrian safety. Therefore, our system is optimized for the unique challenges faced by NYC DOT, focusing on automated traffic monitoring through detection systems to reduce manual oversight and leverage real-time data from existing CCTV infrastructure.
 
 ## System Architecture
+![System Architecture](https://github.com/user-attachments/assets/72ab68e4-e5a3-4f83-b82b-ac1d01b695d1)
 
-#### Data (ETL Pipeline)
+#### Data [(ETL Pipeline)](./model_pipeline)
 
 * An ETL pipeline for downloading, extracting and sorting the COCO dataset, specifically catered to traffic-related classes, live camera feeds (e.g., CCTV or streamed videos), and simulated video streams.
 * The pipeline extracts frames or images, performs necessary preprocessing (resizing, normalization, etc.), and feeds the cleaned data into the model, which then moves for inferencing.
@@ -43,8 +44,8 @@ All design decisions in this project are specifically tailored to meet the needs
 * GitHub Actions also manage hosting an ArgoCD key for automated deployments.
 * Terraform and Ansible are used for infrastructure management and configuration.
 * Any code changes or new model training runs trigger automated testing and deployment scripts.
-* Terraform scripts manage cloud infrastructure, including VMs, containers, and networking.
-* Ansible is used to automate the configuration of servers and manage deployment environments.
+* [Terraform](./model-serving/infra) scripts manage cloud infrastructure, including VMs, containers, and networking.
+* [Ansible](./model-serving/ansible) was used to automate the configuration of servers and manage deployment environments.
 
 #### Monitoring and Evaluation Tools
 
@@ -52,14 +53,6 @@ All design decisions in this project are specifically tailored to meet the needs
 * Grafana and Prometheus are used for real-time monitoring, displaying metrics such as throughput, inference rate, and system load.
 * FastAPI serves as the API framework for handling inference requests, enabling integration with monitoring tools.
 * A batch of offline evaluation and inference is conducted using pytest to ensure model connectivity, accuracy, and performance.
-
-## Datasets and Models
-
-### Data Preprocessing and Class Concentration
-
-Here is the updated section on the COCO dataset to include the number of training, testing, and validation images, as well as the total size of the dataset:
-
----
 
 ## Datasets and Models
 
@@ -85,13 +78,13 @@ The COCO dataset consists of approximately **118,000 training images**, **5,000 
 | Storage (Block/Object)       | \~80 GB persistent storage                  | To save processed data sets, trained models, logs, and hold the training code.    |
 
 
-## Frontend and Inference Service
+## Frontend and Inference Service 
 
-This video inference service provides a robust API for object detection using YOLO models. It handles both video and image uploads, processes them using pre-trained models stored in MLflow (http://129.114.27.202:30938/), and returns annotated results with detected objects. The system features a model caching mechanism for improved performance, progress tracking via server-sent events, and comprehensive Prometheus-style metrics collection for monitoring system health, resource usage, and inference performance. All processed media files and job metadata are stored in MinIO (http://129.114.27.202:30001/) for persistence. The service includes a middleware for capturing detailed HTTP request metrics and offers both synchronous and streaming endpoints for job status updates. Additional features include Python garbage collection monitoring, process-level resource tracking, and flexible job management with cleanup of completed tasks. The service integrates with external APIs for analytics while performing local inference, offering a complete solution for video and image object detection workloads.
+The [video inference service](./video-inference-ui) provides a robust API for object detection using YOLO models. It handles both video and image uploads, processes them using pre-trained models stored in MLflow (http://129.114.27.202:30938/), and returns annotated results with detected objects. The system features a model caching mechanism for improved performance, progress tracking via server-sent events, and comprehensive Prometheus-style metrics collection for monitoring system health, resource usage, and inference performance. All processed media files and job metadata are stored in MinIO (http://129.114.27.202:30001/) for persistence. The service includes a middleware for capturing detailed HTTP request metrics and offers both synchronous and streaming endpoints for job status updates. Additional features include Python garbage collection monitoring, process-level resource tracking, and flexible job management with cleanup of completed tasks. The service integrates with external APIs for analytics while performing local inference, offering a complete solution for video and image object detection workloads.
 
 ## Monitoring and Experiment Tracking
 
-The system is monitored using Grafana (http://129.114.27.202:30091/) for visualization and Prometheus (http://129.114.27.202:30090/) for metrics collection. The Grafana dashboards displays real-time data including inference latency, system performance, and resource utilization. Prometheus scrapes metrics exposed via the FastAPI service and logs them for further analysis and alerting.
+The system is monitored using Grafana (http://129.114.27.202:30091/) for visualization and Prometheus (http://129.114.27.202:30090/) for metrics collection. The Grafana dashboards displays real-time data including inference latency, system performance, and resource utilization. Prometheus scrapes metrics exposed via the FastAPI service and logs them for further analysis and alerting. [PyTest](./tests/offline) was also used to perfom some offline evaluation of the model.
 
 ## Challenges and Mitigation
 
