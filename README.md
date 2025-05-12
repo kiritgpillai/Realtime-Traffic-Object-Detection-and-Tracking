@@ -18,7 +18,8 @@ Our project aims to enhance real-time traffic monitoring by replacing manual or 
 All design decisions in this project are specifically tailored to meet the needs of the New York City Department of Transportation (NYC DOT). As one of the most complex and heavily trafficked urban environments, New York City requires a robust, scalable, and real-time traffic monitoring system to address congestion, traffic violations, and pedestrian safety. Therefore, our system is optimized for the unique challenges faced by NYC DOT, focusing on automated traffic monitoring through detection systems to reduce manual oversight and leverage real-time data from existing CCTV infrastructure.
 
 ## System Architecture
-![Screenshot 2025-05-11 233943](https://github.com/user-attachments/assets/ab45dcf6-2684-4d1e-b3a7-554225da03f1)
+
+![Screenshot 2025-05-11 233943](https://github.com/user-attachments/assets/9c812528-d6e1-4f38-b23f-fc02c2f9dd72)
 ![System Architecture](https://github.com/user-attachments/assets/72ab68e4-e5a3-4f83-b82b-ac1d01b695d1)
 
 #### Data [(ETL Pipeline)](./model_pipeline)
