@@ -98,45 +98,41 @@ services:
     depends_on:
       - ray-head
 
-  ray-worker-1:
-    image: rayproject/ray:2.42.1-gpu
+  ray-worker-0:
+    image: ray-rocm:2.42.1
     container_name: ray-worker-0
     command: ["ray", "start", "--address=ray-head:6379", "--num-cpus=32", "--num-gpus=1", "--block"]
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: "nvidia"
-              capabilities: ["gpu"]
-              device_ids: ["0"]
+    devices:
+      - /dev/kfd
+      - /dev/dri/renderD128
     environment:
+      - HIP_VISIBLE_DEVICES=0
+      - ROCR_VISIBLE_DEVICES=0
       - AWS_ACCESS_KEY_ID=your-access-key     # for MinIO access
       - AWS_SECRET_ACCESS_KEY=your-secret-key
       - AWS_ENDPOINT_URL=http://minio:9000
     shm_size: '12g'
     volumes:
-      - food11:/mnt
+      - /mnt/object:/home/jovyan/work/
     depends_on:
       - ray-head
 
-  ray-worker-2:
-    image: rayproject/ray:2.42.1-gpu
+  ray-worker-1:
+    image: ray-rocm:2.42.1
     container_name: ray-worker-1
     command: ["ray", "start", "--address=ray-head:6379", "--num-cpus=32", "--num-gpus=1", "--block"]
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: "nvidia"
-              capabilities: ["gpu"]
-              device_ids: ["1"]
+    devices:
+      - /dev/kfd
+      - /dev/dri/renderD129
     environment:
+      - HIP_VISIBLE_DEVICES=0
+      - ROCR_VISIBLE_DEVICES=0
       - AWS_ACCESS_KEY_ID=your-access-key     # for MinIO access
       - AWS_SECRET_ACCESS_KEY=your-secret-key
       - AWS_ENDPOINT_URL=http://minio:9000
     shm_size: '12g'
     volumes:
-      - food11:/mnt
+      - /mnt/object:/home/jovyan/work/
     depends_on:
       - ray-head
 
@@ -144,5 +140,3 @@ volumes:
   grafana_storage:
   ray_tmp:
   minio_data:
-  food11:
-    external: true  # Uses externally created volume
